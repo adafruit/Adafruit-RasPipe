@@ -11,7 +11,7 @@ size = width, height = 320, 240
 
 black = (0, 0, 0)
 white = (255,255,255)
-font_big = pygame.font.Font(None, 40) 
+font_big = pygame.font.Font(None, 30) 
 
 screen = pygame.display.set_mode(size)
 
@@ -25,8 +25,8 @@ while line:
 
     screen.fill(black)
 
-    text_surface = font_big.render(line, True, white)
-    rect = text_surface.get_rect(center=(160,120))
+    text_surface = font_big.render(line.rstrip(), True, white)
+    rect = text_surface.get_rect(center=(160, 30))
     screen.blit(text_surface, rect)
 
 #   a = 100
@@ -42,5 +42,7 @@ while line:
 #           sys.exit()
 
     pygame.display.flip()
+
+    pygame.time.wait(500);
 
     line = sys.stdin.readline()
