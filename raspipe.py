@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 import sys
@@ -7,10 +7,12 @@ import pygame
 class RasPipe:
     size = width, height = 320, 240
     font_size = 30
+    delay = 70
     black = (0, 0, 0)
     white = (255,255,255)
     input_buffer_size = 100
     input_lines = []
+    display_lines = 7
 
     def __init__(self, infile):
         self.infile = infile
@@ -42,7 +44,7 @@ class RasPipe:
 
             pygame.display.flip()
 
-            pygame.time.wait(100);
+            pygame.time.wait(self.delay);
 
             self.input_lines.append(line)
             line = self.infile.readline()
@@ -52,19 +54,22 @@ class RasPipe:
 
        # How big should our font be?
        if len(self.input_lines) > 20:
+           self.delay = 30
            self.font_size = 20
 
        if len(self.input_lines) > 50:
+           self.delay = 20
            self.font_size = 15
 
        if len(self.input_lines) > 100:
+           self.delay = 5
            self.font_size = 10
 
        if self.font_size != original_font_size:
            self.font = pygame.font.Font(None, self.font_size) 
 
        # How many lines of text to display?
-       self.display_lines = (self.size[1] / self.font_size) - 1
+       self.display_lines = int(self.size[1] / self.font_size) - 1
 
 rp = RasPipe(sys.stdin)
 rp.run()
