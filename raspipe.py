@@ -3,46 +3,68 @@
 
 import sys
 import pygame
-import re
 
-pygame.init()
+class RasPipe:
+    size = width, height = 320, 240
+    font_size = 30
+    black = (0, 0, 0)
+    white = (255,255,255)
+    input_buffer_size = 100
+    input_lines = []
 
-size = width, height = 320, 240
+    def __init__(self, infile):
+        self.infile = infile
+        pygame.init()
+        self.screen = pygame.display.set_mode(self.size)
+        self.font = pygame.font.Font(None, self.font_size) 
 
-black = (0, 0, 0)
-white = (255,255,255)
-font_big = pygame.font.Font(None, 30) 
+    def run(self):
+        line = self.infile.readline()
+        while line:
+            for event in pygame.event.get():
+              if event.type == pygame.QUIT:
+                sys.exit()
 
-screen = pygame.display.set_mode(size)
+            self.scale_display()
 
-line = sys.stdin.readline()
-while line:
-    stars = re.sub('\S', '★', line)
+            self.screen.fill(self.black)
 
-    for event in pygame.event.get():
-      if event.type == pygame.QUIT:
-        sys.exit()
+            # Get last 7 lines of input...
+            to_render = self.input_lines[-self.display_lines:]
 
-    screen.fill(black)
+            # ...and scroll them up the display.
+            y = 0
+            for render_line in to_render:
+                y += self.font_size
+                text_surface = self.font.render(render_line.rstrip(), True, self.white)
+                rect = text_surface.get_rect(center=(160, y))
+                self.screen.blit(text_surface, rect)
 
-    text_surface = font_big.render(line.rstrip(), True, white)
-    rect = text_surface.get_rect(center=(160, 30))
-    screen.blit(text_surface, rect)
+            pygame.display.flip()
 
-#   a = 100
-#   if pygame.key.get_focused():
-#     press = pygame.key.get_pressed()
-#     for i in xrange(0,len(press)):
-#       if press[i] == 1:
-#         name = pygame.key.name(i)
-#         text = font_big.render(name, True, white)
-#         screen.blit(text, (100, a))
-#         a=a+100
-#         if name == "q":
-#           sys.exit()
+            pygame.time.wait(100);
 
-    pygame.display.flip()
+            self.input_lines.append(line)
+            line = self.infile.readline()
 
-    pygame.time.wait(500);
+    def scale_display(self):
+       original_font_size = self.font_size
 
-    line = sys.stdin.readline()
+       # How big should our font be?
+       if len(self.input_lines) > 20:
+           self.font_size = 20
+
+       if len(self.input_lines) > 50:
+           self.font_size = 15
+
+       if len(self.input_lines) > 100:
+           self.font_size = 10
+
+       if self.font_size != original_font_size:
+           self.font = pygame.font.Font(None, self.font_size) 
+
+       # How many lines of text to display?
+       self.display_lines = (self.size[1] / self.font_size) - 1
+
+rp = RasPipe(sys.stdin)
+rp.run()
