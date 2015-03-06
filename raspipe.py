@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-import sys
+import math
+import os
 import pygame
+import random
+import re
+import sys
 
 class RasPipe:
     size = width, height = 320, 240
-    font_size = 30
+    # size = width, height = 480, 320
+
+    font_size = 48
     delay = 70
-    black = (0, 0, 0)
-    white = (255,255,255)
     input_buffer_size = 100
     input_lines = []
     display_lines = 7
@@ -17,30 +21,57 @@ class RasPipe:
     def __init__(self, infile):
         self.infile = infile
         pygame.init()
+        exit
         self.screen = pygame.display.set_mode(self.size)
         self.font = pygame.font.Font(None, self.font_size) 
 
+        self.bgcolor = pygame.Color(0, 0, 0)
+        self.fgcolor = pygame.Color(255, 255, 255)
+
+        # A little bit of sound.
+        pygame.mixer.init()
+        self.click = pygame.mixer.Sound('./tick.wav')
+
     def run(self):
+        tick = 0
+
+        self.click.play()
+
         line = self.infile.readline()
         while line:
             for event in pygame.event.get():
               if event.type == pygame.QUIT:
                 sys.exit()
 
+            tick = tick + 1
+
             self.scale_display()
 
-            self.screen.fill(self.black)
+            self.screen.fill(self.bgcolor)
 
-            # Get last 7 lines of input...
+            # Get last display_lines of input...
             to_render = self.input_lines[-self.display_lines:]
 
-            # ...and scroll them up the display.
+            # ...and scroll them up the display:
             y = 0
             for render_line in to_render:
                 y += self.font_size
-                text_surface = self.font.render(render_line.rstrip(), True, self.white)
-                rect = text_surface.get_rect(center=(160, y))
+                text_surface = self.font.render(render_line.rstrip(), True, self.fgcolor)
+                # TODO: allow centering text
+                # rect = text_surface.get_rect(center=((self.width / 2), y))
+                rect = text_surface.get_rect(left=2, top=y)
                 self.screen.blit(text_surface, rect)
+            
+            # A progress bar of sorts
+            progress = (self.width / 100) * (len(self.input_lines) / 10)
+            self.screen.fill(self.fgcolor, [0, 0, progress, self.font_size])
+
+            if tick % self.display_lines == 0:
+                self.click.play()
+                # self.bgcolor.r = random.randrange(0, 255)
+                # self.bgcolor.g = random.randrange(0, 255)
+                # self.bgcolor.b = random.randrange(0, 255)
+                # self.bgcolor.a = random.randrange(0, 255)
 
             pygame.display.flip()
 
@@ -50,26 +81,26 @@ class RasPipe:
             line = self.infile.readline()
 
     def scale_display(self):
+       """Set the current font size and delay based on amount of input"""
        original_font_size = self.font_size
 
-       # How big should our font be?
-       if len(self.input_lines) > 20:
-           self.delay = 30
-           self.font_size = 20
-
-       if len(self.input_lines) > 50:
-           self.delay = 20
-           self.font_size = 15
-
-       if len(self.input_lines) > 100:
+       # How big should our font be, and how fast should text scroll?
+       if len(self.input_lines) > 150:
+           self.font_size = 18
            self.delay = 5
-           self.font_size = 10
+       elif len(self.input_lines) > 60:
+           self.font_size = 20
+           self.delay = 10
+       elif len(self.input_lines) > 30:
+           self.font_size = 24
+           self.delay = 20
 
        if self.font_size != original_font_size:
            self.font = pygame.font.Font(None, self.font_size) 
-
+   
        # How many lines of text to display?
        self.display_lines = int(self.size[1] / self.font_size) - 1
 
-rp = RasPipe(sys.stdin)
-rp.run()
+if __name__ == '__main__':
+    rp = RasPipe(sys.stdin)
+    rp.run()
