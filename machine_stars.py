@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import pygame
 
@@ -25,6 +24,7 @@ screen = pygame.display.set_mode([320, 240])
 
 # This will hold some input lines:
 stars_length = 0
+offset = 0
 
 display_lines = [sys.stdin.readline()]
 while len(display_lines) > 0:
@@ -34,15 +34,19 @@ while len(display_lines) > 0:
     screen.fill(bg_color, [0, 0, 320, 120])
     screen.fill(bg_color, [machine_rect.right, machine_rect.top, 320, 240])
 
-    display_lines.insert(0, sys.stdin.readline())
-    if len(display_lines) > 6:
+    line = sys.stdin.readline()
+    if line:
+        display_lines.insert(0, line)
+    if (len(display_lines) > 6) or (not line):
         stars_length = len(display_lines.pop())
+    if not line:
+        offset = offset + 20
 
-    # Display the last 5 lines of input falling into the machine's input:
-    y = 0
+    # Display the input falling into the machine's input:
+    y = 0 + offset
     for render_line in display_lines:
         input_text_surface = font.render(render_line.rstrip(), True, text_color)
-        input_text_rect = input_text_surface.get_rect(left=24, top=y)
+        input_text_rect = input_text_surface.get_rect(left = 24, top = y)
         screen.blit(input_text_surface, input_text_rect)
         y = y + 20
 
