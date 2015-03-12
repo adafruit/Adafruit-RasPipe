@@ -7,6 +7,7 @@ import pygame
 import random
 import re
 import sys
+import getopt
 
 class RasPipe:
     size = width, height = 320, 240
@@ -23,7 +24,7 @@ class RasPipe:
         pygame.init()
         exit
         self.screen = pygame.display.set_mode(self.size)
-        self.font = pygame.font.Font(None, self.font_size) 
+        self.setfont(self.font_size)
 
         self.bgcolor = pygame.Color(0, 0, 0)
         self.fgcolor = pygame.Color(255, 255, 255)
@@ -31,6 +32,9 @@ class RasPipe:
         # A little bit of sound.
         pygame.mixer.init()
         self.click = pygame.mixer.Sound('./tick.wav')
+
+    def setfont(self, size):
+        self.font = pygame.font.Font(None, self.font_size) 
 
     def run(self):
         tick = 0
@@ -72,7 +76,8 @@ class RasPipe:
                 # self.bgcolor.g = random.randrange(0, 255)
                 # self.bgcolor.b = random.randrange(0, 255)
                 # self.bgcolor.a = random.randrange(0, 255)
-
+            
+            # Acutally display the display:
             pygame.display.flip()
 
             pygame.time.wait(self.delay);
@@ -96,11 +101,17 @@ class RasPipe:
            self.delay = 20
 
        if self.font_size != original_font_size:
-           self.font = pygame.font.Font(None, self.font_size) 
+           self.setfont(self.font_size)
    
        # How many lines of text to display?
        self.display_lines = int(self.size[1] / self.font_size) - 1
 
 if __name__ == '__main__':
     rp = RasPipe(sys.stdin)
+
+    opts, args = getopt.getopt(sys.argv[1:], 'f:')
+    for opt, arg in opts:
+        if opt == '-f':
+            rp.setfont(int(arg))
+
     rp.run()
