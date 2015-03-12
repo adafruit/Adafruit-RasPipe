@@ -77,7 +77,7 @@ class RasPipe:
                 # self.bgcolor.b = random.randrange(0, 255)
                 # self.bgcolor.a = random.randrange(0, 255)
             
-            # Acutally display the display:
+            # Actually display the display:
             pygame.display.flip()
 
             pygame.time.wait(self.delay);
