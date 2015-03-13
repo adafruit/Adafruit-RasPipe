@@ -1,26 +1,25 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import sys
 import pygame
 import random
 
+text_color = pygame.Color(0, 0, 0)
+bg_color = pygame.Color(255, 255, 255)
+
 pygame.init()
+screen = pygame.display.set_mode([320, 240])
+screen.fill(bg_color)
 
 # Set up the picture of our little machine:
-machine_img = pygame.image.load('machine.png')
+machine_img = pygame.image.load('machine.png').convert_alpha()
 machine_img = pygame.transform.smoothscale(machine_img, (100, 112))
 machine_rect = machine_img.get_rect()
 machine_rect.left = 10
 machine_rect.top = 120
 
 # Set up the picture of a star:
-orig_star_img = pygame.image.load('star.png')
-
-text_color = pygame.Color(0, 0, 0)
-bg_color = pygame.Color(255, 255, 255)
-
-screen = pygame.display.set_mode([320, 240])
-screen.fill(bg_color)
+orig_star_img = pygame.image.load('star.png').convert_alpha()
 
 # This will hold some input lines:
 stars_length = 0
