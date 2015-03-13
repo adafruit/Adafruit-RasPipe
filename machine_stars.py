@@ -14,7 +14,7 @@ machine_rect.left = 10
 machine_rect.top = 120
 
 # Set up the picture of a star:
-original_star_img = pygame.image.load('star.png')
+orig_star_img = pygame.image.load('star.png')
 
 text_color = pygame.Color(0, 0, 0)
 bg_color = pygame.Color(255, 255, 255)
@@ -75,7 +75,7 @@ while len(display_lines) > 0:
         for i in range(0, stars_length):
             star_w = random.randrange(8, 30)
             star_h = random.randrange(8, 30)
-            star_img = pygame.transform.smoothscale(original_star_img, (star_w, star_h))
+            star_img = pygame.transform.smoothscale(orig_star_img, (star_w, star_h))
 
             star_rect = star_img.get_rect()
             star_rect.left = star_x
@@ -89,4 +89,4 @@ while len(display_lines) > 0:
 
             star_x = star_x + star_w
 
-    pygame.time.wait(200)
+    pygame.time.wait(120)
