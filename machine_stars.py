@@ -65,20 +65,26 @@ while len(display_lines) > 0:
 
     pygame.display.update()
 
-    # Display stars leaving machine's output:
+    # Display stars leaving machine's output.  Stars are scaled to a random
+    # height & width between 8 and 30 pixels, then displayed at a random
+    # vertical location on the screen +/- 8 pixels from 185:
     if stars_length > 0:
         star_x = machine_rect.right
         for i in range(0, stars_length):
-            star_w = random.randrange(10, 28)
-            star_h = random.randrange(10, 28)
-            star_x = star_x + star_w
+            star_w = random.randrange(8, 30)
+            star_h = random.randrange(8, 30)
             star_img = pygame.transform.smoothscale(original_star_img, (star_w, star_h))
+
             star_rect = star_img.get_rect()
-            pygame.display.update()
-            pygame.time.wait(15)
             star_rect.left = star_x
-            star_rect.top = 185 + random.randrange(-5, 5)
+            star_rect.top = 185 + random.randrange(-8, 8)
             screen.blit(star_img, star_rect)
 
-    # Chill out for for 400 milliseconds:
+            pygame.display.update()
+
+            # Chill out for 15 milliseconds:
+            pygame.time.wait(15)
+
+            star_x = star_x + star_w
+
     pygame.time.wait(200)
