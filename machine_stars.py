@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import sys
-import pygame
 import random
+
+import pygame
 
 text_color = pygame.Color(0, 0, 0)
 bg_color = pygame.Color(255, 255, 255)
@@ -60,9 +61,9 @@ while len(display_lines) > 0:
         font_size = font_size - 2
         font = pygame.font.Font(None, font_size) 
         input_text_surface = font.render(render_me.rstrip(), True, text_color)
-        input_text_rect = input_text_surface.get_rect(center = (64, y))
+        input_text_rect = input_text_surface.get_rect(center=(64, y))
         screen.blit(input_text_surface, input_text_rect)
-        y = y + 20
+        y += 20
 
     pygame.display.update()
 
@@ -86,6 +87,6 @@ while len(display_lines) > 0:
             # Chill out for 15 milliseconds:
             pygame.time.wait(15)
 
-            star_x = star_x + star_w
+            star_x += star_w
 
-    pygame.time.wait(120)
+    pygame.time.wait(100)
