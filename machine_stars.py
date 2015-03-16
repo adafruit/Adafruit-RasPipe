@@ -87,6 +87,10 @@ while len(display_lines) > 0:
             # Chill out for 15 milliseconds:
             pygame.time.wait(15)
 
+            # Move start of next star to end of the current one, and quit
+            # drawing stars if we've run off the edge of the screen:
             star_x += star_w
+            if star_x > 320:
+                break
 
     pygame.time.wait(100)
