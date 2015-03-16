@@ -18,6 +18,7 @@ machine_img = pygame.transform.smoothscale(machine_img, (100, 112))
 machine_rect = machine_img.get_rect()
 machine_rect.left = 10
 machine_rect.top = 120
+screen.blit(machine_img, machine_rect)
 
 # Set up the picture of a star:
 orig_star_img = pygame.image.load('star.png').convert_alpha()
@@ -30,11 +31,6 @@ offset = 0
 display_lines = [sys.stdin.readline()]
 
 while len(display_lines) > 0:
-    screen.blit(machine_img, machine_rect)
-
-    # Black out the areas above and right of the machine image:
-    screen.fill(bg_color, [0, 0, 320, 120])
-    screen.fill(bg_color, [machine_rect.right, machine_rect.top, 320, 240])
 
     # Get the next available line from stdin:
     line = sys.stdin.readline()
@@ -52,6 +48,10 @@ while len(display_lines) > 0:
     # of the screen so it seems to fall downwards:
     if not line:
         offset = offset + 20
+
+    # Blank the areas above and right of the machine image:
+    screen.fill(bg_color, [0, 0, 320, 120])
+    screen.fill(bg_color, [machine_rect.right, machine_rect.top, 320, 240])
 
     # Display the most recent lines of stdin falling into the machine,
     # in a font that gets smaller as it falls:
