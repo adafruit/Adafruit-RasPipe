@@ -10,7 +10,7 @@ import pygame
 class RasPipe:
     size = width, height = 320, 240
 
-    delay = 70
+    delay = 70 # ms
     display_lines = 7
     font_size = 26
     input_lines = []
@@ -126,7 +126,7 @@ class RasPipe:
 if __name__ == '__main__':
     rp = RasPipe(sys.stdin)
 
-    opts, args = getopt.getopt(sys.argv[1:], 'x:y:s')
+    opts, args = getopt.getopt(sys.argv[1:], 'sx:y:')
     for opt, arg in opts:
         if opt == '-x':
             rp.size[0] = (int(arg))
