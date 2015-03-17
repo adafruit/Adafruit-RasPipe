@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import getopt
-import random
 import sys
 import time
 
@@ -63,31 +62,22 @@ class RasPipe:
                 render_line = render_line.rstrip()
 
                 if self.stars:
-                    star_x = 0
-                    stars_length = len(render_line)
-                    for i in range(0, stars_length):
-                        star_w = random.randrange(8, 40)
-                        star_h = random.randrange(8, 40)
-                        star_img = pygame.transform.smoothscale(self.orig_star_img, (star_w, star_h))
-                        star_rect = star_img.get_rect()
-                        star_rect.left = star_x
-                        star_rect.top = y + random.randrange(-4, 4)
-                        self.screen.blit(star_img, star_rect)
-                        star_x += star_w
-                        if star_x > 320:
-                            break
-                        pygame.display.update()
+                    star_w = star_h = len(render_line)
+                    star_img = pygame.transform.smoothscale(self.orig_star_img, (star_w, star_h))
+                    r = star_img.get_rect(center=(self.width / 2, y))
+                    self.screen.blit(star_img, r)
+                    y += star_h
+                    if y > self.height:
+                        break
 
                 else:
                     text_surface = self.font.render(render_line, True, self.fgcolor)
                     r = text_surface.get_rect(left=2, top=y)
                     self.screen.blit(text_surface, r)
-
-                    for pixel_x in range(0, len(render_line.rstrip())):
+                    for pixel_x in range(0, len(render_line)):
                         if render_line[pixel_x] != ' ':
                             pygame.draw.line(self.screen, self.fgcolor, [pixel_x, r.bottom], [pixel_x, r.bottom], 1)
-
-                y += self.font_size
+                    y += self.font_size
 
             if self.tick % self.display_lines == 0:
                 self.click.play()
