@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import getopt
+import re
 import sys
 import time
 
@@ -9,6 +10,7 @@ import pygame
 class RasPipe:
     size = width, height = 320, 240
 
+    grep_for = None
     delay = 70 # ms
     display_lines = 7
     font_size = 26
@@ -33,6 +35,7 @@ class RasPipe:
 
         # Set up the picture of a star:
         self.orig_star_img = pygame.image.load('star.png').convert_alpha()
+        self.penguin = pygame.image.load('penguin_thinking.png').convert_alpha()
 
     def set_font(self, size):
         """Set a display font of a given size."""
@@ -43,7 +46,7 @@ class RasPipe:
 
     def wait_for_click(self):
         event = pygame.event.wait()
-        if event.type in (pygame.QUIT, pygame.MOUSEBUTTONDOWN):
+        if event.type == pygame.MOUSEBUTTONDOWN:
             return
         else:
             self.wait_for_click()
@@ -66,12 +69,22 @@ class RasPipe:
 
        if self.font_size != original_font_size:
            self.set_font(self.font_size)
-   
+
        # How many lines of text to display?
        self.display_lines = int(self.size[1] / self.font_size)
 
+    def penguin_think(self, thought):
+        r = self.penguin.get_rect(left=50, bottom=self.height)
+        self.screen.fill(self.fgcolor, [0, 10, self.width, r.top])
+        self.screen.blit(self.penguin, r)
+        thought_surface = self.font.render(thought, True, self.bgcolor)
+        thought_r = thought_surface.get_rect(left=5, top=30)
+        self.screen.blit(thought_surface, thought_r)
+        pygame.display.update()
+
     def run(self):
         """Process standard input."""
+        matched_line = None # for regex matches
         line = self.infile.readline()
         while line:
             for event in pygame.event.get():
@@ -86,8 +99,15 @@ class RasPipe:
 
             # Get last display_lines of input and scroll them up display:
             to_render = self.input_lines[-self.display_lines:]
+
             y = 0
             for render_line in to_render:
+                # Show a penguin thinking if we have a regular expression to
+                # search for and found a match:
+                if self.grep_for is not None:
+                    if re.match(self.grep_for, render_line):
+                        matched_line = render_line
+
                 render_line = render_line.rstrip()
 
                 if self.stars:
@@ -108,9 +128,12 @@ class RasPipe:
                             pygame.draw.line(self.screen, self.fgcolor, [pixel_x, r.bottom], [pixel_x, r.bottom], 1)
                     y += self.font_size
 
+            if matched_line is not None:
+                self.penguin_think(matched_line)
+
             if self.tick % self.display_lines == 0:
                 self.click.play()
-            
+
             # Actually display the display:
             pygame.display.flip()
 
@@ -130,12 +153,14 @@ class RasPipe:
 if __name__ == '__main__':
     rp = RasPipe(sys.stdin)
 
-    opts, args = getopt.getopt(sys.argv[1:], 'sx:y:')
+    opts, args = getopt.getopt(sys.argv[1:], 'sr:x:y:')
     for opt, arg in opts:
         if opt == '-x':
             rp.size[0] = (int(arg))
         if opt == '-y':
             rp.size[1] = (int(arg))
+        if opt == '-r':
+            rp.grep_for = (arg)
         if opt == '-s':
             rp.toggle_stars()
 
