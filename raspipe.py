@@ -22,7 +22,7 @@ class RasPipe:
 
         pygame.init()
         self.screen = pygame.display.set_mode(self.size)
-        self.setfont(self.font_size)
+        self.set_font(self.font_size)
 
         self.fgcolor = pygame.Color(0, 0, 0)
         self.bgcolor = pygame.Color(255, 255, 255)
@@ -34,12 +34,41 @@ class RasPipe:
         # Set up the picture of a star:
         self.orig_star_img = pygame.image.load('star.png').convert_alpha()
 
-    def setfont(self, size):
+    def set_font(self, size):
         """Set a display font of a given size."""
-        self.font = pygame.font.Font(None, self.font_size) 
+        self.font = pygame.font.Font(None, size) 
 
     def toggle_stars(self):
         self.stars = not self.stars
+
+    def wait_for_click(self):
+        event = pygame.event.wait()
+        if event.type in (pygame.QUIT, pygame.MOUSEBUTTONDOWN):
+            return
+        else:
+            self.wait_for_click()
+
+    def scale_display(self):
+       """Set the current font size and delay based on amount of input."""
+       original_font_size = self.font_size
+
+       # How big should our font be, and how fast should text scroll?
+       if len(self.input_lines) > 150:
+           self.input_lines.pop(0)
+           self.font_size = 18
+           self.delay = 5
+       elif len(self.input_lines) > 60:
+           self.font_size = 20
+           self.delay = 10
+       elif len(self.input_lines) > 30:
+           self.font_size = 24
+           self.delay = 20
+
+       if self.font_size != original_font_size:
+           self.set_font(self.font_size)
+   
+       # How many lines of text to display?
+       self.display_lines = int(self.size[1] / self.font_size)
 
     def run(self):
         """Process standard input."""
@@ -63,7 +92,7 @@ class RasPipe:
 
                 if self.stars:
                     star_w = star_h = len(render_line)
-                    star_img = pygame.transform.smoothscale(self.orig_star_img, (star_w, star_h))
+                    star_img = pygame.transform.scale(self.orig_star_img, (star_w, star_h))
                     r = star_img.get_rect(center=(self.width / 2, y))
                     self.screen.blit(star_img, r)
                     y += star_h
@@ -90,27 +119,12 @@ class RasPipe:
             self.input_lines.append(line)
             line = self.infile.readline()
 
-    def scale_display(self):
-       """Set the current font size and delay based on amount of input."""
-       original_font_size = self.font_size
-
-       # How big should our font be, and how fast should text scroll?
-       if len(self.input_lines) > 150:
-           self.input_lines.pop(0)
-           self.font_size = 18
-           self.delay = 5
-       elif len(self.input_lines) > 60:
-           self.font_size = 20
-           self.delay = 10
-       elif len(self.input_lines) > 30:
-           self.font_size = 24
-           self.delay = 20
-
-       if self.font_size != original_font_size:
-           self.setfont(self.font_size)
-   
-       # How many lines of text to display?
-       self.display_lines = int(self.size[1] / self.font_size)
+        # Wait until input from user before quitting.
+        self.set_font(48)
+        msg = self.font.render("click to exit", True, self.fgcolor)
+        self.screen.blit(msg, msg.get_rect(center=(self.width / 2, self.height / 2)))
+        pygame.display.update()
+        self.wait_for_click()
 
 # Handle running this file as a standalone script.
 if __name__ == '__main__':
