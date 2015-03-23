@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-export SDL_FBDEV=/dev/fb1
-./listener.js | ./raspipe.py
+echo "Listening on port 5280"
+while true; do netcat -l 5280; done | ./raspipe_pitft.sh
