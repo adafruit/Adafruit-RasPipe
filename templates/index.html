@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RasPipe</title>
+</head>
+
+<body>
+
+  <ul>
+  {% for line in rp.input_lines %}
+    <li>{{ line }}</li>
+  {% endfor %}
+  </ul>
+
+  <form action="display" method="post">
+    <input name="line">
+    <button>display this</button>
+  </form>
+
+</body>
+</html>
