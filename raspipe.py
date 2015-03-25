@@ -17,6 +17,7 @@ class RasPipe:
     input_lines = []
     tick = 0
     stars = False
+    matched_line = None # for regex matches
 
     def __init__(self, infile):
         """Create a RasPipe object for a given input file."""
@@ -84,62 +85,20 @@ class RasPipe:
 
     def run(self):
         """Process standard input."""
-        matched_line = None # for regex matches
         line = self.infile.readline()
         while line:
+            self.input_lines.append(line)
+
             for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN and event.key in (pygame.K_q, pygame.K_x):
+                    sys.exit()
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.toggle_stars()                 
 
-            self.tick += 1
-            self.scale_display()
-            self.screen.fill(self.bgcolor)
+            self.render_frame()
 
-            # Get last display_lines of input and scroll them up display:
-            to_render = self.input_lines[-self.display_lines:]
-
-            y = 0
-            for render_line in to_render:
-                # Show a penguin thinking if we have a regular expression to
-                # search for and found a match:
-                if self.grep_for is not None:
-                    if re.match(self.grep_for, render_line):
-                        matched_line = render_line
-
-                render_line = render_line.rstrip()
-
-                if self.stars:
-                    star_w = star_h = len(render_line)
-                    star_img = pygame.transform.scale(self.orig_star_img, (star_w, star_h))
-                    r = star_img.get_rect(center=(self.width / 2, y))
-                    self.screen.blit(star_img, r)
-                    y += star_h
-                    if y > self.height:
-                        break
-
-                else:
-                    text_surface = self.font.render(render_line, True, self.fgcolor)
-                    r = text_surface.get_rect(left=2, top=y)
-                    self.screen.blit(text_surface, r)
-                    for pixel_x in range(0, len(render_line)):
-                        if render_line[pixel_x] != ' ':
-                            pygame.draw.line(self.screen, self.fgcolor, [pixel_x, r.bottom], [pixel_x, r.bottom], 1)
-                    y += self.font_size
-
-            if matched_line is not None:
-                self.penguin_think(matched_line)
-
-            if self.tick % self.display_lines == 0:
-                self.click.play()
-
-            # Actually display the display:
-            pygame.display.flip()
-
-            pygame.time.wait(self.delay);
-
-            self.input_lines.append(line)
             line = self.infile.readline()
 
         # Wait until input from user before quitting.
@@ -148,6 +107,53 @@ class RasPipe:
         self.screen.blit(msg, msg.get_rect(center=(self.width / 2, self.height / 2)))
         pygame.display.update()
         self.wait_for_click()
+
+    def render_frame(self):
+        """Render an individual frame of animation."""
+        self.tick += 1
+        self.scale_display()
+        self.screen.fill(self.bgcolor)
+
+        # Get last display_lines of input and scroll them up display:
+        to_render = self.input_lines[-self.display_lines:]
+
+        y = 0
+        for render_line in to_render:
+            # Show a penguin thinking if we have a regular expression to
+            # search for and found a match:
+            if self.grep_for is not None:
+                if re.match(self.grep_for, render_line):
+                    self.matched_line = render_line
+
+            render_line = render_line.rstrip()
+
+            if self.stars:
+                star_w = star_h = len(render_line)
+                star_img = pygame.transform.scale(self.orig_star_img, (star_w, star_h))
+                r = star_img.get_rect(center=(self.width / 2, y))
+                self.screen.blit(star_img, r)
+                y += star_h
+                if y > self.height:
+                    break
+
+            else:
+                text_surface = self.font.render(render_line, True, self.fgcolor)
+                r = text_surface.get_rect(left=2, top=y)
+                self.screen.blit(text_surface, r)
+                for pixel_x in range(0, len(render_line)):
+                    if render_line[pixel_x] != ' ':
+                        pygame.draw.line(self.screen, self.fgcolor, [pixel_x, r.bottom], [pixel_x, r.bottom], 1)
+                y += self.font_size
+
+        if self.matched_line is not None:
+            self.penguin_think(self.matched_line)
+
+        if self.tick % self.display_lines == 0:
+            self.click.play()
+
+        # Actually display the display:
+        pygame.display.flip()
+        pygame.time.wait(self.delay);
 
 # Handle running this file as a standalone script.
 if __name__ == '__main__':
