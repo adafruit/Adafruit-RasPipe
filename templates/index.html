@@ -7,16 +7,20 @@
 
 <body>
 
+  <h1>Display things on your PiTFT!</h1>
+
+  <form action="display" method="post">
+    <input name="line">
+    <button>display this</button>
+  </form>
+
   <ul>
   {% for line in rp.input_lines %}
     <li>{{ line }}</li>
   {% endfor %}
   </ul>
 
-  <form action="display" method="post">
-    <input name="line">
-    <button>display this</button>
-  </form>
+  <p><a href="/quit">(quit)</a></p>
 
 </body>
 </html>

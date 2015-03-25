@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import sys
-
 from flask import Flask
 from flask import request
 from flask import render_template
@@ -27,9 +25,10 @@ def display():
 
 @app.route('/quit')
 def quit():
-    sys.exit()
+    func = request.environ.get('werkzeug.server.shutdown')
+    func()
+    return "Quitting..."
 
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0')
-

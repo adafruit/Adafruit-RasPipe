@@ -24,6 +24,7 @@ class RasPipe:
         self.infile = infile
 
         pygame.init()
+        pygame.mouse.set_visible(False)
         self.screen = pygame.display.set_mode(self.size)
         self.set_font(self.font_size)
 
