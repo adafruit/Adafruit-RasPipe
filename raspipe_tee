@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+RASPIPE_ADDY=192.168.1.4
+cat /dev/stdin | tee >(netcat $RASPIPE_ADDY 5280)
