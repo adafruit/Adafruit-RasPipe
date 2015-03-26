@@ -3,6 +3,9 @@ Adafruit-RasPipe
 
 A small-display Raspberry Pi pipeline viewer using Python and Pygame.
 
+See (RasPipe: A Raspberry Pi Pipeline Viewer, Part 1)[1] for context and
+detailed documentation.
+
 contents
 --------
 
@@ -18,3 +21,5 @@ contents
 * `flask_listener.py` - a simple web app using Flask to talk to the RasPipe class.
 * `machine_stars.py` - standard input goes into a little machine and comes out
    as stars.
+
+[1]: https://learn.adafruit.com/raspipe-a-raspberry-pi-pipeline-viewer
