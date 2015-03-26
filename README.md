@@ -3,7 +3,7 @@ Adafruit-RasPipe
 
 A small-display Raspberry Pi pipeline viewer using Python and Pygame.
 
-See (RasPipe: A Raspberry Pi Pipeline Viewer, Part 1)[1] for context and
+See [RasPipe: A Raspberry Pi Pipeline Viewer, Part 1][1] for context and
 detailed documentation.
 
 contents
